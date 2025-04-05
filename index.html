@@ -1,0 +1,1478 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SafetyQuest - Office Safety Gamification</title>
+    <style>
+        :root {
+            --primary-color: #FFB600;
+            --secondary-color: #010101;
+            --light-gray: #f8f8f8;
+            --medium-gray: #dddddd;
+            --text-color: #333333;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Arial', sans-serif;
+        }
+        
+        body {
+            background-color: var(--light-gray);
+            color: var(--text-color);
+        }
+        
+        .header {
+            background-color: var(--secondary-color);
+            color: var(--primary-color);
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        
+        .logo {
+            font-size: 1.8rem;
+            font-weight: bold;
+        }
+        
+        .nav {
+            display: flex;
+            gap: 1rem;
+        }
+        
+        .nav-item {
+            background-color: transparent;
+            border: 1px solid var(--primary-color);
+            color: var(--primary-color);
+            padding: 0.5rem 1rem;
+            border-radius: 1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .nav-item.active {
+            background-color: var(--primary-color);
+            color: var(--secondary-color);
+        }
+        
+        .nav-item:hover {
+            background-color: var(--primary-color);
+            color: var(--secondary-color);
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 2rem auto;
+            padding: 0 1rem;
+        }
+        
+        .page-title {
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+            color: var(--secondary-color);
+        }
+        
+        .subtitle {
+            font-size: 1rem;
+            color: #666;
+            margin-bottom: 2rem;
+        }
+        
+        /* Dashboard styles */
+        .dashboard {
+            display: grid;
+            grid-template-columns: 3fr 1fr;
+            gap: 1.5rem;
+        }
+        
+        .safety-journey {
+            background: white;
+            border-radius: 0.5rem;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+        
+        .journey-title {
+            font-size: 1.2rem;
+            margin-bottom: 1rem;
+            font-weight: bold;
+        }
+        
+        .journey-map {
+            width: 100%;
+            height: 120px;
+            background: #f0f0f0;
+            border-radius: 0.25rem;
+            position: relative;
+            margin-bottom: 1rem;
+            overflow: hidden;
+        }
+        
+        .journey-area {
+            height: 100%;
+            display: inline-block;
+            position: relative;
+        }
+        
+        .journey-area.completed {
+            background-color: var(--primary-color);
+        }
+        
+        .journey-area.current {
+            background-color: var(--primary-color);
+            opacity: 0.5;
+        }
+        
+        .area-icon {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: white;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-weight: bold;
+        }
+        
+        .stats-container {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1rem;
+        }
+        
+        .stat-card {
+            background: white;
+            border-radius: 0.5rem;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            padding: 1rem;
+        }
+        
+        .stat-title {
+            font-size: 1rem;
+            color: #666;
+            margin-bottom: 0.5rem;
+        }
+        
+        .stat-value {
+            font-size: 1.8rem;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .progress-circle {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: conic-gradient(var(--primary-color) 45%, #eee 0);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+        }
+        
+        .progress-circle::before {
+            content: "";
+            position: absolute;
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            background: white;
+        }
+        
+        .progress-text {
+            position: relative;
+            z-index: 1;
+            font-weight: bold;
+            font-size: 0.9rem;
+        }
+        
+        .badge-preview {
+            display: flex;
+            gap: 0.5rem;
+            margin-top: 0.5rem;
+        }
+        
+        .mini-badge {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            background-color: var(--secondary-color);
+            color: var(--primary-color);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 0.8rem;
+        }
+        
+        .leaderboard {
+            background: white;
+            border-radius: 0.5rem;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            padding: 1.5rem;
+            grid-column: 2;
+            grid-row: 1 / span 2;
+        }
+        
+        .leaderboard-title {
+            font-size: 1.2rem;
+            margin-bottom: 1rem;
+            font-weight: bold;
+        }
+        
+        .leaderboard-item {
+            padding: 0.75rem;
+            border-radius: 0.25rem;
+            margin-bottom: 0.5rem;
+            display: flex;
+            justify-content: space-between;
+        }
+        
+        .leaderboard-item:nth-child(even) {
+            background-color: #f8f8f8;
+        }
+        
+        .leaderboard-item.current {
+            background-color: var(--primary-color);
+            opacity: 0.2;
+            font-weight: bold;
+        }
+        
+        .next-module {
+            background-color: var(--secondary-color);
+            color: white;
+            border-radius: 0.5rem;
+            padding: 1.5rem;
+            margin-top: 1.5rem;
+        }
+        
+        .next-title {
+            color: var(--primary-color);
+            font-size: 1.2rem;
+            font-weight: bold;
+            margin-bottom: 0.5rem;
+        }
+        
+        .next-description {
+            margin-bottom: 1rem;
+            font-size: 0.9rem;
+        }
+        
+        .btn {
+            padding: 0.5rem 1.5rem;
+            border: none;
+            border-radius: 1.5rem;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-primary {
+            background-color: var(--primary-color);
+            color: var(--secondary-color);
+        }
+        
+        .btn-primary:hover {
+            opacity: 0.9;
+        }
+        
+        /* Module selection styles */
+        .modules-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 1.5rem;
+        }
+        
+        .module-card {
+            background: white;
+            border-radius: 0.5rem;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+        
+        .module-header {
+            background-color: var(--primary-color);
+            padding: 1rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .module-title {
+            font-weight: bold;
+            color: var(--secondary-color);
+        }
+        
+        .module-status {
+            font-size: 0.8rem;
+            font-weight: bold;
+        }
+        
+        .module-content {
+            padding: 1.5rem;
+            display: flex;
+            gap: 1rem;
+        }
+        
+        .module-icon {
+            width: 50px;
+            height: 50px;
+            background: var(--secondary-color);
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: var(--primary-color);
+            font-size: 1.5rem;
+        }
+        
+        .module-description {
+            flex: 1;
+        }
+        
+        .module-actions {
+            padding: 1rem;
+            display: flex;
+            justify-content: flex-end;
+        }
+        
+        .module-card.locked .module-header {
+            background-color: var(--medium-gray);
+            color: #777;
+        }
+        
+        .module-card.locked .module-icon {
+            background-color: #777;
+            color: #ddd;
+        }
+        
+        .progress-bar {
+            height: 1.5rem;
+            background-color: #eee;
+            border-radius: 0.75rem;
+            margin: 2rem 0;
+            overflow: hidden;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background-color: var(--primary-color);
+            border-radius: 0.75rem;
+        }
+        
+        /* Scenario styles */
+        .scenario-container {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+        
+        .scenario-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .scenario-progress {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+        
+        .progress-track {
+            width: 250px;
+            height: 10px;
+            background-color: #333;
+            border-radius: 5px;
+            overflow: hidden;
+        }
+        
+        .progress-fill.scenario {
+            width: 40%;
+        }
+        
+        .scenario-score {
+            display: flex;
+            gap: 0.5rem;
+        }
+        
+        .score-pill {
+            background-color: var(--secondary-color);
+            color: var(--primary-color);
+            padding: 0.5rem 1rem;
+            border-radius: 1rem;
+            font-weight: bold;
+        }
+        
+        .scenario-scene {
+            background-color: #707890;
+            height: 380px;
+            border-radius: 0.5rem;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .office-element {
+            position: absolute;
+        }
+        
+        .wall {
+            width: 100%;
+            height: 250px;
+            background-color: #e0e3ed;
+            top: 0;
+        }
+        
+        .floor {
+            width: 100%;
+            height: 130px;
+            background-color: #9ba0b5;
+            bottom: 0;
+        }
+        
+        .window {
+            width: 200px;
+            height: 150px;
+            background-color: #c0ddff;
+            top: 30px;
+            left: 70px;
+            border: 2px solid #555;
+        }
+        
+        .desk {
+            width: 300px;
+            height: 80px;
+            background-color: #7d6c5d;
+            bottom: 50px;
+            left: 50%;
+            transform: translateX(-50%);
+            border-top: 10px solid #6d5c4d;
+        }
+        
+        .computer {
+            width: 80px;
+            height: 60px;
+            background-color: #222;
+            bottom: 130px;
+            left: 450px;
+            border-radius: 3px;
+        }
+        
+        .computer::before {
+            content: "";
+            position: absolute;
+            width: 60px;
+            height: 40px;
+            background-color: #88ccff;
+            top: 10px;
+            left: 10px;
+            border-radius: 1px;
+        }
+        
+        .power-strip {
+            width: 80px;
+            height: 20px;
+            background-color: #ddd;
+            bottom: 50px;
+            right: 320px;
+            border-radius: 3px;
+        }
+        
+        .extension-cords {
+            position: absolute;
+            bottom: 50px;
+            right: 320px;
+        }
+        
+        .hazard-spot {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background-color: var(--primary-color);
+            opacity: 0.3;
+            border: 2px solid var(--primary-color);
+            position: absolute;
+            bottom: 50px;
+            right: 320px;
+            cursor: pointer;
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0% {
+                transform: scale(1);
+                opacity: 0.3;
+            }
+            50% {
+                transform: scale(1.1);
+                opacity: 0.5;
+            }
+            100% {
+                transform: scale(1);
+                opacity: 0.3;
+            }
+        }
+        
+        .scenario-instructions {
+            background-color: white;
+            padding: 1.5rem;
+            border-radius: 0.5rem;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+        
+        .instruction-title {
+            font-size: 1.2rem;
+            font-weight: bold;
+            margin-bottom: 0.5rem;
+        }
+        
+        .help-button {
+            position: absolute;
+            bottom: 1.5rem;
+            right: 1.5rem;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background-color: var(--secondary-color);
+            color: var(--primary-color);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 1.5rem;
+            font-weight: bold;
+            cursor: pointer;
+        }
+        
+        /* Quiz styles */
+        .quiz-container {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+        
+        .quiz-content {
+            background-color: white;
+            padding: 2rem;
+            border-radius: 0.5rem;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+        
+        .question {
+            font-size: 1.2rem;
+            font-weight: bold;
+            margin-bottom: 1.5rem;
+        }
+        
+        .answer-options {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+        
+        .answer-option {
+            padding: 1rem;
+            border: 1px solid #ddd;
+            border-radius: 0.5rem;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .answer-option:hover {
+            border-color: var(--primary-color);
+        }
+        
+        .answer-option.selected {
+            background-color: rgba(255, 182, 0, 0.2);
+            border-color: var(--primary-color);
+            border-width: 2px;
+        }
+        
+        .option-marker {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            border: 2px solid var(--secondary-color);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-weight: bold;
+        }
+        
+        .answer-option.selected .option-marker {
+            background-color: var(--primary-color);
+            border-color: var(--primary-color);
+            color: var(--secondary-color);
+        }
+        
+        .quiz-navigation {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 2rem;
+        }
+        
+        .quiz-footer {
+            background-color: var(--secondary-color);
+            padding: 1rem;
+            border-radius: 0.5rem;
+            display: flex;
+            justify-content: space-around;
+        }
+        
+        .quiz-stat {
+            display: flex;
+            align-items: center;
+            color: white;
+            gap: 0.5rem;
+        }
+        
+        .stat-pill {
+            background-color: var(--primary-color);
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: var(--secondary-color);
+            font-weight: bold;
+        }
+        
+        /* Additional screens would be added here */
+        
+        /* Learning content styles */
+        .learning-container {
+            display: grid;
+            grid-template-columns: 200px 1fr;
+            gap: 1.5rem;
+        }
+        
+        .sidebar {
+            background-color: white;
+            border-radius: 0.5rem;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            padding: 1.5rem;
+        }
+        
+        .sidebar-title {
+            font-size: 1.2rem;
+            font-weight: bold;
+            margin-bottom: 1rem;
+        }
+        
+        .section-list {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+        
+        .section-item {
+            padding: 0.75rem;
+            border-radius: 0.5rem;
+            background-color: #eee;
+            cursor: pointer;
+        }
+        
+        .section-item.active {
+            background-color: rgba(255, 182, 0, 0.2);
+            font-weight: bold;
+        }
+        
+        .section-item .check {
+            float: right;
+            color: #27ae60;
+        }
+        
+        .points-display {
+            margin-top: 2rem;
+            background-color: var(--secondary-color);
+            color: var(--primary-color);
+            padding: 1rem;
+            border-radius: 0.5rem;
+            text-align: center;
+        }
+        
+        .points-title {
+            margin-bottom: 0.5rem;
+        }
+        
+        .points-value {
+            font-size: 1.5rem;
+            font-weight: bold;
+        }
+        
+        .content-main {
+            background-color: white;
+            border-radius: 0.5rem;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            padding: 1.5rem;
+        }
+        
+        .content-title {
+            font-size: 1.5rem;
+            font-weight: bold;
+            margin-bottom: 1rem;
+        }
+        
+        .content-image {
+            width: 100%;
+            height: 200px;
+            background-color: #eef;
+            border-radius: 0.5rem;
+            margin-bottom: 1.5rem;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+        }
+        
+        .illustration {
+            width: 320px;
+            height: 100px;
+            background-color: #ddd;
+            border-radius: 0.5rem;
+            position: relative;
+        }
+        
+        .content-text {
+            font-size: 1rem;
+            margin-bottom: 1rem;
+        }
+        
+        .bullet-points {
+            margin-left: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+        
+        .content-tip {
+            background-color: rgba(255, 182, 0, 0.1);
+            border: 1px solid var(--primary-color);
+            padding: 1rem;
+            border-radius: 0.5rem;
+            margin-bottom: 1.5rem;
+        }
+        
+        .tip-title {
+            font-weight: bold;
+            margin-bottom: 0.5rem;
+        }
+        
+        .content-navigation {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 1.5rem;
+        }
+        
+        .try-scenario-btn {
+            flex: 1;
+            text-align: center;
+            margin: 0 1rem;
+        }
+        
+        /* Mobile responsiveness */
+        @media (max-width: 768px) {
+            .dashboard {
+                grid-template-columns: 1fr;
+            }
+            
+            .leaderboard {
+                grid-column: 1;
+                grid-row: auto;
+            }
+            
+            .learning-container {
+                grid-template-columns: 1fr;
+            }
+            
+            .modules-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        /* Currently displayed content */
+        .screen:not(.active) {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <div class="logo">SafetyQuest</div>
+        <div class="nav">
+            <button class="nav-item active" onclick="showScreen('dashboard')">Dashboard</button>
+            <button class="nav-item" onclick="showScreen('modules')">Modules</button>
+            <button class="nav-item" onclick="showScreen('badges')">Badges</button>
+            <button class="nav-item" onclick="showScreen('leaderboard')">Leaderboard</button>
+        </div>
+    </header>
+    
+    <main class="container">
+        <!-- Dashboard Screen -->
+        <section id="dashboard" class="screen active">
+            <h1 class="page-title">Welcome back, Alex!</h1>
+            <p class="subtitle">Continue your safety journey where you left off.</p>
+            
+            <div class="dashboard">
+                <div>
+                    <div class="safety-journey">
+                        <h2 class="journey-title">Your Safety Journey</h2>
+                        <div class="journey-map">
+                            <div class="journey-area completed" style="width: 25%;">
+                                <div class="area-icon">Falls</div>
+                            </div>
+                            <div class="journey-area completed" style="width: 19%;">
+                                <div class="area-icon">Ergo</div>
+                            </div>
+                            <div class="journey-area current" style="width: 12%;">
+                                <div class="area-icon">Elect</div>
+                            </div>
+                            <div class="journey-area" style="width: 14%;">
+                                <div class="area-icon">File</div>
+                            </div>
+                            <div class="journey-area" style="width: 30%;">
+                                <div class="area-icon">Equip</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="stats-container">
+                        <div class="stat-card">
+                            <p class="stat-title">Your Progress</p>
+                            <div class="stat-value">
+                                <div class="progress-circle">
+                                    <span class="progress-text">45%</span>
+                                </div>
+                                <div>
+                                    <span>3 of 10 modules</span><br>
+                                    <span>completed</span>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="stat-card">
+                            <p class="stat-title">Achievements</p>
+                            <div class="stat-value">
+                                <span>850</span> points earned
+                            </div>
+                            <div class="badge-preview">
+                                <div class="mini-badge">★</div>
+                                <div class="mini-badge">♦</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="next-module">
+                        <h3 class="next-title">Continue Learning: Electrical Safety</h3>
+                        <p class="next-description">Learn how to safely use extension cords and electrical appliances in the office</p>
+                        <button class="btn btn-primary" onclick="showScreen('learning')">Start</button>
+                    </div>
+                </div>
+                
+                <div class="leaderboard">
+                    <h2 class="leaderboard-title">Leaderboard</h2>
+                    <div class="leaderboard-item">
+                        <div>1. Taylor Smith</div>
+                        <div>1250 pts</div>
+                    </div>
+                    <div class="leaderboard-item">
+                        <div>2. Jamie Johnson</div>
+                        <div>1100 pts</div>
+                    </div>
+                    <div class="leaderboard-item current">
+                        <div>3. YOU</div>
+                        <div>850 pts</div>
+                    </div>
+                    <div class="leaderboard-item">
+                        <div>4. Alex Rivera</div>
+                        <div>820 pts</div>
+                    </div>
+                    <div class="leaderboard-item">
+                        <div>5. Sam Wilson</div>
+                        <div>780 pts</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        <!-- Modules Screen -->
+        <section id="modules" class="screen">
+            <h1 class="page-title">Safety Modules</h1>
+            <p class="subtitle">Select a module to continue your safety training.</p>
+            
+            <div class="modules-grid">
+                <div class="module-card">
+                    <div class="module-header">
+                        <div class="module-title">Falls Prevention</div>
+                        <div class="module-status">COMPLETED</div>
+                    </div>
+                    <div class="module-content">
+                        <div class="module-icon">↓</div>
+                        <div class="module-description">
+                            Learn how to prevent slips, trips, and falls in the office
+                        </div>
+                    </div>
+                    <div class="module-actions">
+                        <button class="btn btn-primary" style="background-color: #010101; color: #FFB600;">Review</button>
+                    </div>
+                </div>
+                
+                <div class="module-card">
+                    <div class="module-header">
+                        <div class="module-title">Overexertion</div>
+                        <div class="module-status">COMPLETED</div>
+                    </div>
+                    <div class="module-content">
+                        <div class="module-icon">↔</div>
+                        <div class="module-description">
+                            Proper lifting techniques and office ergonomics
+                        </div>
+                    </div>
+                    <div class="module-actions">
+                        <button class="btn btn-primary" style="background-color: #010101; color: #FFB600;">Review</button>
+                    </div>
+                </div>
+                
+                <div class="module-card">
+                    <div class="module-header">
+                        <div class="module-title">Electrical Safety</div>
+                        <div class="module-status" style="color: #FFDB7C;">IN PROGRESS</div>
+                    </div>
+                    <div class="module-content">
+                        <div class="module-icon">⚡</div>
+                        <div class="module-description">
+                            Safe use of extension cords and electrical appliances
+                        </div>
+                    </div>
+                    <div class="module-actions">
+                        <button class="btn btn-primary" onclick="showScreen('learning')">Continue</button>
+                    </div>
+                </div>
+                
+                <div class="module-card locked">
+                    <div class="module-header">
+                        <div class="module-title">Office Equipment</div>
+                        <div class="module-status">LOCKED</div>
+                    </div>
+                    <div class="module-content">
+                        <div class="module-icon">⚒</div>
+                        <div class="module-description">
+                            Safe operation of common office equipment
+                        </div>
+                    </div>
+                    <div class="module-actions">
+                        <button class="btn btn-primary" style="background-color: #ddd; color: #555; cursor: not-allowed;">Unlock</button>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="progress-bar">
+                <div class="progress-fill" style="width: 30%;"></div>
+            </div>
+            <div style="text-align: center;">3 of 10 modules completed (30%)</div>
+        </section>
+        
+        <!-- Badges Screen -->
+        <section id="badges" class="screen">
+            <h1 class="page-title">Your Achievement Badges</h1>
+            <p class="subtitle">Collect all badges by completing safety modules and challenges!</p>
+            
+            <div style="margin-bottom: 1.5rem;">
+                <button class="btn btn-primary" style="margin-right: 0.5rem;">All Badges</button>
+                <button class="btn" style="border: 1px solid #010101; background: transparent; margin-right: 0.5rem;">Earned</button>
+                <button class="btn" style="border: 1px solid #010101; background: transparent;">Locked</button>
+            </div>
+            
+            <div class="modules-grid">
+                <div class="module-card">
+                    <div class="module-content" style="flex-direction: column; align-items: center; text-align: center; padding: 2rem;">
+                        <div class="module-icon" style="width: 80px; height: 80px; font-size: 2rem; margin-bottom: 1rem;">★</div>
+                        <h3 style="margin-bottom: 0.5rem;">Safety Starter</h3>
+                        <p style="color: #666; font-size: 0.9rem;">Complete your first module</p>
+                    </div>
+                </div>
+                
+                <div class="module-card">
+                    <div class="module-content" style="flex-direction: column; align-items: center; text-align: center; padding: 2rem;">
+                        <div class="module-icon" style="width: 80px; height: 80px; font-size: 2rem; margin-bottom: 1rem;">♦</div>
+                        <h3 style="margin-bottom: 0.5rem;">Perfect Score</h3>
+                        <p style="color: #666; font-size: 0.9rem;">100% on any module quiz</p>
+                    </div>
+                </div>
+                
+                <div class="module-card">
+                    <div class="module-content" style="flex-direction: column; align-items: center; text-align: center; padding: 2rem;">
+                        <div class="module-icon" style="width: 80px; height: 80px; font-size: 2rem; margin-bottom: 1rem; background-color: #ddd; color: #999;">⚒</div>
+                        <h3 style="margin-bottom: 0.5rem;">Tool Master</h3>
+                        <p style="color: #666; font-size: 0.9rem;">Complete Office Equipment module</p>
+                    </div>
+                </div>
+                
+                <div class="module-card">
+                    <div class="module-content" style="flex-direction: column; align-items: center; text-align: center; padding: 2rem;">
+                        <div class="module-icon" style="width: 80px; height: 80px; font-size: 2rem; margin-bottom: 1rem; background-color: #ddd; color: #999;">⚡</div>
+                        <h3 style="margin-bottom: 0.5rem;">Electrical Expert</h3>
+                        <p style="color: #666; font-size: 0.9rem;">Complete Electrical Safety module</p>
+                    </div>
+                </div>
+                
+                <div class="module-card">
+                    <div class="module-content" style="flex-direction: column; align-items: center; text-align: center; padding: 2rem;">
+                        <div class="module-icon" style="width: 80px; height: 80px; font-size: 2rem; margin-bottom: 1rem;">☘</div>
+                        <h3 style="margin-bottom: 0.5rem;">Safety Streak</h3>
+                        <p style="color: #666; font-size: 0.9rem;">Log in 5 days in a row</p>
+                    </div>
+                </div>
+                
+                <div class="module-card">
+                    <div class="module-content" style="flex-direction: column; align-items: center; text-align: center; padding: 2rem;">
+                        <div class="module-icon" style="width: 80px; height: 80px; font-size: 2rem; margin-bottom: 1rem; background-color: #ddd; color: #999;">♟</div>
+                        <h3 style="margin-bottom: 0.5rem;">Top of the Board</h3>
+                        <p style="color: #666; font-size: 0.9rem;">Reach top 10 on the leaderboard</p>
+                    </div>
+                </div>
+                
+                <div class="module-card">
+                    <div class="module-content" style="flex-direction: column; align-items: center; text-align: center; padding: 2rem;">
+                        <div class="module-icon" style="width: 80px; height: 80px; font-size: 2rem; margin-bottom: 1rem; background-color: #ddd; color: #999;">⚖</div>
+                        <h3 style="margin-bottom: 0.5rem;">Ergonomics Pro</h3>
+                        <p style="color: #666; font-size: 0.9rem;">Complete Repetitive Motion module</p>
+                    </div>
+                </div>
+                
+                <div class="module-card">
+                    <div class="module-content" style="flex-direction: column; align-items: center; text-align: center; padding: 2rem;">
+                        <div class="module-icon" style="width: 80px; height: 80px; font-size: 2rem; margin-bottom: 1rem; background-color: #ddd; color: #999;">🏆</div>
+                        <h3 style="margin-bottom: 0.5rem;">Safety Champion</h3>
+                        <p style="color: #666; font-size: 0.9rem;">Complete all safety modules</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        <!-- Leaderboard Screen -->
+        <section id="leaderboard" class="screen">
+            <h1 class="page-title">Safety Champions Leaderboard</h1>
+            <p class="subtitle">See how you stack up against your colleagues in safety knowledge.</p>
+            
+            <div style="margin-bottom: 1.5rem; display: flex; flex-wrap: wrap; gap: 0.5rem;">
+                <button class="btn btn-primary" style="margin-right: 0.5rem;">All Employees</button>
+                <button class="btn" style="border: 1px solid #010101; background: transparent; margin-right: 0.5rem;">My Department</button>
+                <button class="btn" style="border: 1px solid #010101; background: transparent; margin-right: 0.5rem;">Weekly</button>
+                <button class="btn" style="border: 1px solid #010101; background: transparent; margin-right: 0.5rem;">Monthly</button>
+                <button class="btn" style="border: 1px solid #010101; background: transparent;">All Time</button>
+                
+                <div style="margin-left: auto;">
+                    <input type="text" placeholder="Search colleagues..." style="padding: 0.5rem; border-radius: 0.25rem; border: 1px solid #ddd;">
+                </div>
+            </div>
+            
+            <!-- Top 3 Podium -->
+            <div style="background-color: #f0f0f0; border-radius: 0.5rem; padding: 1.5rem; display: flex; justify-content: center; position: relative; margin-bottom: 1.5rem; height: 180px;">
+                <!-- Second Place -->
+                <div style="position: absolute; left: 30%; bottom: 0;">
+                    <div style="width: 80px; height: 60px; background-color: #C0C0C0; border-radius: 0.25rem; display: flex; justify-content: center; align-items: center; color: white; font-weight: bold; font-size: 1.2rem;">2</div>
+                    <div style="text-align: center; margin-top: 0.5rem; font-weight: bold;">Taylor Smith</div>
+                    <div style="text-align: center; margin-top: 0.25rem;">
+                        <span class="mini-badge" style="display: inline-flex;">1250</span>
+                    </div>
+                </div>
+                
+                <!-- First Place -->
+                <div style="position: absolute; left: 45%; bottom: 0;">
+                    <div style="width: 80px; height: 80px; background-color: var(--primary-color); border-radius: 0.25rem; display: flex; justify-content: center; align-items: center; color: white; font-weight: bold; font-size: 1.2rem;">1</div>
+                    <div style="text-align: center; margin-top: 0.5rem; font-weight: bold;">Jamie Johnson</div>
+                    <div style="text-align: center; margin-top: 0.25rem;">
+                        <span class="mini-badge" style="display: inline-flex;">1350</span>
+                    </div>
+                </div>
+                
+                <!-- Third Place -->
+                <div style="position: absolute; left: 60%; bottom: 0;">
+                    <div style="width: 80px; height: 40px; background-color: #CD7F32; border-radius: 0.25rem; display: flex; justify-content: center; align-items: center; color: white; font-weight: bold; font-size: 1.2rem;">3</div>
+                    <div style="text-align: center; margin-top: 0.5rem; font-weight: bold;">Alex Rivera</div>
+                    <div style="text-align: center; margin-top: 0.25rem;">
+                        <span class="mini-badge" style="display: inline-flex;">1100</span>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Leaderboard Table Header -->
+            <div style="background-color: var(--secondary-color); padding: 1rem; border-radius: 0.5rem 0.5rem 0 0; display: grid; grid-template-columns: 50px 1fr 1fr 1fr 100px; color: var(--primary-color); font-weight: bold;">
+                <div>Rank</div>
+                <div>Name</div>
+                <div>Department</div>
+                <div>Modules Completed</div>
+                <div style="text-align: right;">Points</div>
+            </div>
+            
+            <!-- Leaderboard Entries -->
+            <div style="margin-bottom: 1.5rem; border-radius: 0 0 0.5rem 0.5rem; overflow: hidden;">
+                <div style="padding: 1rem; background-color: white; display: grid; grid-template-columns: 50px 1fr 1fr 1fr 100px; border-bottom: 1px solid #eee;">
+                    <div>4</div>
+                    <div>Jordan Lee</div>
+                    <div>Customer Service</div>
+                    <div>7/10</div>
+                    <div style="text-align: right;">1050</div>
+                </div>
+                
+                <div style="padding: 1rem; background-color: #f9f9f9; display: grid; grid-template-columns: 50px 1fr 1fr 1fr 100px; border-bottom: 1px solid #eee;">
+                    <div>5</div>
+                    <div>Sam Thompson</div>
+                    <div>Finance</div>
+                    <div>6/10</div>
+                    <div style="text-align: right;">980</div>
+                </div>
+                
+                <div style="padding: 1rem; background-color: white; display: grid; grid-template-columns: 50px 1fr 1fr 1fr 100px; border-bottom: 1px solid #eee;">
+                    <div>6</div>
+                    <div>Casey Wilson</div>
+                    <div>Marketing</div>
+                    <div>6/10</div>
+                    <div style="text-align: right;">925</div>
+                </div>
+                
+                <div style="padding: 1rem; background-color: rgba(255, 182, 0, 0.2); border: 2px solid var(--primary-color); display: grid; grid-template-columns: 50px 1fr 1fr 1fr 100px; font-weight: bold;">
+                    <div>7</div>
+                    <div>YOU</div>
+                    <div>IT Department</div>
+                    <div>3/10</div>
+                    <div style="text-align: right;">850</div>
+                </div>
+            </div>
+        </section>
+        
+        <!-- Interactive Scenario Screen -->
+        <section id="scenario" class="screen">
+            <div class="scenario-container">
+                <div class="scenario-header">
+                    <h1 class="page-title">Electrical Safety: Scenario 2</h1>
+                    
+                    <div class="scenario-progress">
+                        <div class="progress-track">
+                            <div class="progress-fill scenario"></div>
+                        </div>
+                        <div style="font-size: 0.8rem; color: var(--primary-color);">2/5 Scenarios</div>
+                    </div>
+                </div>
+                
+                <div class="scenario-score">
+                    <div class="score-pill">Score: 250</div>
+                    <div class="score-pill">Time: 1:45</div>
+                </div>
+                
+                <div class="scenario-scene">
+                    <div class="office-element wall"></div>
+                    <div class="office-element floor"></div>
+                    <div class="office-element window"></div>
+                    <div class="office-element desk"></div>
+                    <div class="office-element computer"></div>
+                    <div class="office-element power-strip"></div>
+                    <div class="hazard-spot" onclick="identifyHazard()"></div>
+                    
+                    <div class="help-button">?</div>
+                </div>
+                
+                <div class="scenario-instructions">
+                    <h3 class="instruction-title">Identify the Electrical Hazard</h3>
+                    <p>You notice this workstation during your office safety walk. Find and click on the electrical safety hazard that could lead to overheating, damage to equipment, or even fire.</p>
+                </div>
+            </div>
+        </section>
+        
+        <!-- Quiz Screen -->
+        <section id="quiz" class="screen">
+            <div class="quiz-container">
+                <div class="scenario-header">
+                    <h1 class="page-title">Electrical Safety: Module Quiz</h1>
+                    
+                    <div class="scenario-progress">
+                        <div class="progress-track">
+                            <div class="progress-fill" style="width: 50%;"></div>
+                        </div>
+                        <div style="font-size: 0.8rem; color: var(--primary-color);">Question 5/10</div>
+                    </div>
+                </div>
+                
+                <div class="quiz-content">
+                    <h2 class="question">5. What is the recommended action when you find a damaged electrical cord?</h2>
+                    
+                    <div class="answer-options">
+                        <div class="answer-option">
+                            <div class="option-marker">A</div>
+                            <div>Cover the damaged area with electrical tape</div>
+                        </div>
+                        
+                        <div class="answer-option">
+                            <div class="option-marker">B</div>
+                            <div>Continue using it but avoid touching the damaged part</div>
+                        </div>
+                        
+                        <div class="answer-option selected">
+                            <div class="option-marker">C</div>
+                            <div>Stop using it, tag it as damaged, and report it to facilities</div>
+                        </div>
+                        
+                        <div class="answer-option">
+                            <div class="option-marker">D</div>
+                            <div>Unplug it only during heavy storms</div>
+                        </div>
+                    </div>
+                    
+                    <div class="quiz-navigation">
+                        <button class="btn" style="background-color: var(--secondary-color); color: var(--primary-color);">Previous</button>
+                        <button class="btn btn-primary">Next</button>
+                    </div>
+                </div>
+                
+                <div class="quiz-footer">
+                    <div class="quiz-stat">
+                        <div class="stat-pill">450</div>
+                        points
+                    </div>
+                    
+                    <div class="quiz-stat">
+                        <div class="stat-pill">4</div>
+                        correct
+                    </div>
+                    
+                    <div class="quiz-stat">
+                        <div class="stat-pill">0</div>
+                        incorrect
+                    </div>
+                    
+                    <div class="quiz-stat">
+                        <div class="stat-pill">⏱</div>
+                        Time: 3:45
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        <!-- Learning Content Screen -->
+        <section id="learning" class="screen">
+            <div class="learning-container">
+                <div class="sidebar">
+                    <h2 class="sidebar-title">Module Sections</h2>
+                    
+                    <div class="section-list">
+                        <div class="section-item">
+                            1. Introduction <span class="check">✓</span>
+                        </div>
+                        <div class="section-item active">
+                            2. Extension Cords
+                        </div>
+                        <div class="section-item">
+                            3. Power Strips
+                        </div>
+                        <div class="section-item">
+                            4. Electrical Appliances
+                        </div>
+                        <div class="section-item">
+                            5. Emergency Procedures
+                        </div>
+                    </div>
+                    
+                    <div class="points-display">
+                        <div class="points-title">Current Points:</div>
+                        <div class="points-value">325</div>
+                    </div>
+                </div>
+                
+                <div class="content-main">
+                    <h1 class="content-title">Extension Cord Safety</h1>
+                    
+                    <div class="content-image">
+                        <div class="illustration">
+                            <!-- Extension cord illustration would be here -->
+                            <div style="position: absolute; width: 15px; height: 15px; background-color: var(--primary-color); border-radius: 50%; top: 50%; left: 35%;"></div>
+                        </div>
+                    </div>
+                    
+                    <p class="content-text">When using extension cords in the office, remember these key safety guidelines:</p>
+                    
+                    <ul class="bullet-points">
+                        <li>Never run cords under carpets or across walkways</li>
+                        <li>Inspect cords regularly for damage or fraying</li>
+                        <li>Don't overload cords with multiple devices</li>
+                        <li>Use extension cords temporarily, not as permanent solutions</li>
+                    </ul>
+                    
+                    <div class="content-tip">
+                        <div class="tip-title">Pro Tip:</div>
+                        <p>Extension cords should be rated for their intended use. Make sure to check the amperage rating before connecting devices.</p>
+                    </div>
+                    
+                    <div class="content-navigation">
+                        <button class="btn" style="background-color: var(--secondary-color); color: var(--primary-color);">Previous</button>
+                        
+                        <button class="btn" style="background-color: white; color: var(--secondary-color); border: 1px solid var(--secondary-color);" onclick="showScreen('scenario')">
+                            Try the Interactive Scenario
+                        </button>
+                        
+                        <button class="btn btn-primary">Next</button>
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        <!-- Results Screen -->
+        <section id="results" class="screen">
+            <div style="background: white; border-radius: 0.5rem; box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1); overflow: hidden; margin: 0 auto; max-width: 800px;">
+                <!-- Results Header -->
+                <div style="background-color: var(--primary-color); padding: 1.5rem; text-align: center;">
+                    <h1 style="color: var(--secondary-color); font-size: 1.5rem; font-weight: bold;">Congratulations!</h1>
+                </div>
+                
+                <div style="padding: 2rem;">
+                    <!-- Score Circle -->
+                    <div style="display: flex; justify-content: center; margin-bottom: 2rem;">
+                        <div style="width: 160px; height: 160px; border-radius: 50%; border: 10px solid var(--primary-color); display: flex; flex-direction: column; justify-content: center; align-items: center;">
+                            <div style="font-size: 1.2rem;">Your Score</div>
+                            <div style="font-size: 2.5rem; font-weight: bold;">90%</div>
+                        </div>
+                    </div>
+                    
+                    <!-- Badge Earned -->
+                    <div style="position: absolute; left: 25%; transform: translateX(-50%); top: 250px;">
+                        <div style="width: 100px; height: 100px; border-radius: 50%; background-color: var(--primary-color); display: flex; justify-content: center; align-items: center; font-size: 2.5rem; color: var(--secondary-color);">⚡</div>
+                        <div style="text-align: center; margin-top: 0.5rem; font-weight: bold;">Electrical Expert</div>
+                        <div style="text-align: center; color: #666; font-size: 0.8rem;">Badge Earned!</div>
+                    </div>
+                    
+                    <!-- Stats Row -->
+                    <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; margin: 1rem 0 2rem;">
+                        <div style="background-color: #f0f0f0; padding: 1rem; border-radius: 0.5rem; text-align: center;">
+                            <div style="margin-bottom: 0.5rem;">Time Spent</div>
+                            <div style="font-size: 1.5rem; font-weight: bold;">6:45</div>
+                        </div>
+                        
+                        <div style="background-color: #f0f0f0; padding: 1rem; border-radius: 0.5rem; text-align: center;">
+                            <div style="margin-bottom: 0.5rem;">Questions</div>
+                            <div style="font-size: 1.5rem; font-weight: bold;">9/10</div>
+                        </div>
+                        
+                        <div style="background-color: #f0f0f0; padding: 1rem; border-radius: 0.5rem; text-align: center;">
+                            <div style="margin-bottom: 0.5rem;">Points Earned</div>
+                            <div style="font-size: 1.5rem; font-weight: bold;">450</div>
+                        </div>
+                    </div>
+                    
+                    <!-- Leaderboard Preview -->
+                    <div style="width: 250px; float: right; background-color: #f0f0f0; padding: 1rem; border-radius: 0.5rem; margin-left: 1rem;">
+                        <div style="font-weight: bold; margin-bottom: 0.5rem;">You're on the Leaderboard!</div>
+                        
+                        <div style="background-color: rgba(255, 182, 0, 0.2); padding: 0.25rem 0.5rem; border-radius: 0.25rem; margin-bottom: 0.25rem; font-weight: bold;">
+                            <div style="display: flex; justify-content: space-between;">
+                                <span>5. YOU</span>
+                                <span>1250 pts</span>
+                            </div>
+                        </div>
+                        
+                        <div style="padding: 0.25rem 0.5rem; margin-bottom: 0.25rem;">
+                            <div style="display: flex; justify-content: space-between;">
+                                <span>6. Taylor Smith</span>
+                                <span>1200 pts</span>
+                            </div>
+                        </div>
+                        
+                        <div style="padding: 0.25rem 0.5rem;">
+                            <div style="display: flex; justify-content: space-between;">
+                                <span>7. Jamie Johnson</span>
+                                <span>1150 pts</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Feedback Box -->
+                    <div style="background-color: rgba(1, 1, 1, 0.05); border: 1px solid var(--secondary-color); padding: 1rem; border-radius: 0.5rem; margin-bottom: 2rem;">
+                        <div style="font-weight: bold; margin-bottom: 0.5rem;">Areas for Improvement:</div>
+                        <div>Review question #7 about proper handling of equipment with water damage.</div>
+                    </div>
+                    
+                    <!-- Action Buttons -->
+                    <div style="display: flex; gap: 1rem; margin-top: 2rem;">
+                        <button class="btn" style="flex: 1; background-color: var(--secondary-color); color: var(--primary-color);">Review Answers</button>
+                        <button class="btn btn-primary" style="flex: 1;" onclick="showScreen('dashboard')">Continue</button>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+    
+    <script>
+        function showScreen(screenId) {
+            // Hide all screens
+            document.querySelectorAll('.screen').forEach(screen => {
+                screen.classList.remove('active');
+            });
+            
+            // Show selected screen
+            document.getElementById(screenId).classList.add('active');
+            
+            // Update navigation buttons
+            document.querySelectorAll('.nav-item').forEach(item => {
+                item.classList.remove('active');
+            });
+            
+            // Find the corresponding nav item and activate it
+            const navItems = document.querySelectorAll('.nav-item');
+            for (let i = 0; i < navItems.length; i++) {
+                if (navItems[i].textContent.toLowerCase() === screenId) {
+                    navItems[i].classList.add('active');
+                    break;
+                }
+            }
+        }
+        
+        function identifyHazard() {
+            alert('Correct! You identified the overloaded power strip. This is a common electrical hazard in offices that can lead to overheating or fire.');
+            // In a real implementation, this would update the score and progress to the next scenario
+        }
+    </script>
+</body>
+</html>-title">File Cabinet Safety</div>
+                        <div class="module-status">LOCKED</div>
+                    </div>
+                    <div class="module-content">
+                        <div class="module-icon">□</div>
+                        <div class="module-description">
+                            Prevent tipping hazards and proper drawer usage
+                        </div>
+                    </div>
+                    <div class="module-actions">
+                        <button class="btn btn-primary" style="background-color: #ddd; color: #555; cursor: not-allowed;">Unlock</button>
+                    </div>
+                </div>
+                
+                <div class="module-card locked">
+                    <div class="module-header">
+                        <div class="module-title">Aisle Safety</div>
+                        <div class="module-status">LOCKED</div>
+                    </div>
+                    <div class="module-content">
+                        <div class="module-icon">≡</div>
+                        <div class="module-description">
+                            Safe passage and storage hazards in walkways
+                        </div>
+                    </div>
+                    <div class="module-actions">
+                        <button class="btn btn-primary" style="background-color: #ddd; color: #555; cursor: not-allowed;">Unlock</button>
+                    </div>
+                </div>
+                
+                <div class="module-card locked">
+                    <div class="module-header">
+                        <div class="module
